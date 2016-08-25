@@ -13,11 +13,11 @@ import java.util.Map;
  */
 public class RegisterRequest extends StringRequest {
 
-    private static String RegisterUrl =" http://localhost:49345/Account/Mobileregister";
+  //  private static String RegisterUrl ="https://srdrop.azurewebsites.net/Account/Mobileregister";
     private Map<String,String> params;
 
     public RegisterRequest(String Email,String Password , String ConfirmPassword, Response.Listener<String> listener) {
-        super(Method.POST, RegisterUrl, listener, null);
+        super(Method.POST, AppURLs.RegisterUrl, listener, null);
         params = new HashMap<>();
         params.put("Email", Email);
         params.put("Password", Password);

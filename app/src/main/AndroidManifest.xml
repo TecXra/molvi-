@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="pk.a.com.molvi">
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 
     <application
         android:allowBackup="true"
@@ -43,7 +44,14 @@
             <activity
                 android:name=".About_Activity"
                 android:label="Search" />
-            <activity android:name=".Users" />
+        <activity
+            android:name=".Profile_Activity"
+
+            android:label="Profile" />
+
+
+
+        <activity android:name=".Users" />
 
 
 

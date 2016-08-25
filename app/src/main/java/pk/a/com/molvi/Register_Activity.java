@@ -1,7 +1,10 @@
 package pk.a.com.molvi;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -16,6 +19,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,6 +30,7 @@ public class Register_Activity extends Activity {
 
     private EditText uemail, pass, cnfpassword;
     private Button submit;
+   private ProgressDialog pDialog;
 
     String Email;
     String Password;
@@ -36,6 +41,7 @@ public class Register_Activity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_register);
         Initialize();
+
         submit.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -50,6 +56,8 @@ public class Register_Activity extends Activity {
         uemail = (EditText) findViewById(R.id.email);
         pass = (EditText) findViewById(R.id.pass);
         cnfpassword = (EditText) findViewById(R.id.confpass);
+      pDialog=new ProgressDialog(this);
+      pDialog.setCancelable(true);
 
         submit = (Button)findViewById(R.id.Register);
 
@@ -71,38 +79,44 @@ public class Register_Activity extends Activity {
             cnfpassword.setError("Password Missmatch");
         }
         else {
+            Toast.makeText(Register_Activity.this,"perameters registering",Toast.LENGTH_LONG).show();
 
-            Toast.makeText(this, "Screw You Aloo :)", Toast.LENGTH_SHORT).show();
+            pDialog.setMessage("Registering...");
+            showDialog();
+
         }
 
 
         Response.Listener<String> responselistener = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    String userKey = jsonObject.getString("id");
-                    if(userKey != null)
-                    {
-                        Toast.makeText(Register_Activity.this,"key is "+" ",Toast.LENGTH_LONG).show();
-                    }
-                    else {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(Register_Activity.this);
-                        builder.setMessage("Register Failed")
-                                .setNegativeButton("Retry",null)
-                                .create()
-                                .show();
+           hideDialog();
+                Toast.makeText(Register_Activity.this,"come in response listerner "+" ",Toast.LENGTH_LONG).show();
+                String key= response;
+                if(!key.equals("400"))
+                {
+                    Toast.makeText(Register_Activity.this,"key is"+key+" ",Toast.LENGTH_LONG).show();
+                    SharedPreferences prefs = getSharedPreferences("data", Context.MODE_PRIVATE);
 
-                    }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
+
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("key", key);
+                    editor.commit();
+                    Intent intent=new Intent(Register_Activity.this,Profile_Activity.class);
+                    startActivity(intent);
+
                 }
+                else
+                {
+                    Toast.makeText(Register_Activity.this," sorry",Toast.LENGTH_LONG).show();
+                }
+
             }
         };
 
 
-        
+
         RegisterRequest registerRequest = new RegisterRequest(Email,Password,ConfirmPassword,responselistener);
         RequestQueue queue = Volley.newRequestQueue(Register_Activity.this);
         queue.add(registerRequest);
@@ -119,6 +133,15 @@ public class Register_Activity extends Activity {
         return;
     }
 
+   private void showDialog() {
+        if (!pDialog.isShowing())
+            pDialog.show();
+    }
+
+    private void hideDialog() {
+        if (pDialog.isShowing())
+            pDialog.dismiss();
+    }
 
 
 }
